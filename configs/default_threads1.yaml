@@ -1,0 +1,4 @@
+sirius:
+  executor:
+    pipeline:
+      num_threads: 1
