@@ -25,5 +25,5 @@ for SF in $SFS; do
     --multi-session \
     "$SF" </dev/null 2>&1 | tee "$log" || true
   src="$(grep -m1 '^Run directory: ' "$log" | sed 's/^Run directory: //')"
-  [ -n "$src" ] && [ -d "$src" ] && mv "$src" "$OUT/sf${SF}_${ITERS}iter"
+  [ -n "$src" ] && [ -d "$src" ] && cp -r "$src" "$OUT/sf${SF}_${ITERS}iter" && rm -rf "$src"
 done
