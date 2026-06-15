@@ -1,15 +1,22 @@
 sirius:
   topology:
     num_gpus: 1
-  memory:
+  space:
     gpu:
-      usage_limit_fraction: 0.5
-      reservation_limit_fraction: 1.0
+      - device_id: 0
+        memory_capacity: 12000000000
+        reservation_limit_fraction: 1.0
     host:
-      capacity_bytes: 32000000000
-      initial_number_pools: 10
-      pool_size: 512
-      block_size: 1048576
+      - numa_id: 0
+        memory_capacity: 32000000000
+        block_size: 1048576
+        pool_size: 512
+        initial_number_pools: 10
+      - numa_id: 1
+        memory_capacity: 32000000000
+        block_size: 1048576
+        pool_size: 512
+        initial_number_pools: 10
   executor:
     pipeline:
       num_threads: 1
