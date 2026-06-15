@@ -20,6 +20,7 @@ sirius:
       num_threads: 1
     duckdb_scan:
       num_threads: 4
+      cache: table_gpu
     task_creator:
       num_threads: 2
     downgrade:
