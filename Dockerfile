@@ -11,12 +11,14 @@ RUN     curl -fsSL https://pixi.sh/install.sh | PIXI_VERSION=${PIXI_VERSION} bas
 ENV     PATH="/root/.pixi/bin:$PATH"
 
 #sirius
-RUN     git clone https://github.com/Kihraa/sirius.git /sirius-db/sirius
-WORKDIR /sirius-db/sirius/test/tpch_performance
-RUN     pixi install
+ARG     SIRIUS_REPO=https://github.com/Kihraa/sirius.git
+ARG     SIRIUS_REF=dev
+RUN     git clone "$SIRIUS_REPO" /sirius-db/sirius
 WORKDIR /sirius-db/sirius
-RUN     git checkout dev && git submodule update --init --recursive
-RUN     pixi run make -j$(nproc)
+RUN     git checkout "$SIRIUS_REF" && git submodule update --init --recursive
+RUN     git rev-parse HEAD | tee /sirius-db/sirius_commit.txt
+RUN     pixi install
+RUN     pixi run make
 
 #Nsight
 RUN     echo "deb http://developer.download.nvidia.com/devtools/repos/ubuntu2404/amd64 /" > /etc/apt/sources.list.d/nvidia-devtools.list

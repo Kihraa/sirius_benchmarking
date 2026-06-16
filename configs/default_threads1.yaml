@@ -15,6 +15,10 @@ sirius:
       block_size: 1048576
       pool_size: 128
       initial_number_pools: 4
+    disk:
+      disk_id: 0
+      capacity_bytes: 1099511627776
+      downgrade_root_dirs: "/sirius-db/sirius/spill"
   executor:
     pipeline:
       num_threads: 1
