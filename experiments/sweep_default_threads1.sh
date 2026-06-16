@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sirius defaults but pipeline num_threads=1, multi-session, duckdb parquet.
+# Sirius defaults but pipeline num_threads=1, multi-session, duckdb parquet, GPU-pinned tables.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -23,6 +23,7 @@ for SF in $SFS; do
     --parquet-dir "$DATA_DIR/tpch_parquet_sf${SF}" \
     --iterations "$ITERS" \
     --multi-session \
+    --pinning-mode per-query \
     "$SF" </dev/null 2>&1 | tee "$log" || true
   src="$(grep -m1 '^Run directory: ' "$log" | sed 's/^Run directory: //')"
   [ -n "$src" ] && [ -d "$src" ] && cp -r "$src" "$OUT/sf${SF}_${ITERS}iter" && rm -rf "$src"
