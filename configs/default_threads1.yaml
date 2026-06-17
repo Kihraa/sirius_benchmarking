@@ -3,7 +3,7 @@ sirius:
     num_gpus: 1
   memory:
     gpu:
-      usage_limit_fraction: 0.9
+      usage_limit_fraction: 0.95
       reservation_limit_fraction: 0.9
       downgrade_trigger_fraction: 1.0
       downgrade_stop_fraction: 0.7
@@ -18,7 +18,7 @@ sirius:
     disk:
       disk_id: 0
       capacity_bytes: 1099511627776
-      downgrade_root_dirs: "/sirius-db/sirius/spill"
+      downgrade_root_dirs: ""
   executor:
     pipeline:
       num_threads: 1
