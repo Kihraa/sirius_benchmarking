@@ -4,7 +4,7 @@ set -euo pipefail
 
 BENCH_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export BENCH_REPO
-export SIRIUS_REPO="${SIRIUS_REPO:-/sirius-db/sirius}"
+export SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 export DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 
 SFS="1 3 10 30 100"
@@ -32,5 +32,5 @@ done
 
 EXPERIMENTS="sweep_default_threads1"
 for exp in $EXPERIMENTS; do
-  bash "$BENCH_REPO/experiments/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
+  bash "$BENCH_REPO/experiments/default_spill_disabled/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
 done
