@@ -32,5 +32,5 @@ done
 
 EXPERIMENTS="sweep_default_threads1"
 for exp in $EXPERIMENTS; do
-  bash "$BENCH_REPO/experiments/default_spill_disabled/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
+  bash "$BENCH_REPO/experiments/sweep_default_spill_disabled/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
 done
