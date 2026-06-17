@@ -30,7 +30,7 @@ for SF in $SFS; do
   bash "$BENCH_REPO/test_gen/tpch_duck.sh" "$SF" "$DATA_DIR/tpch_parquet_sf${SF}"
 done
 
-EXPERIMENTS="sweep_default_threads1"
+EXPERIMENTS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16"
 for exp in $EXPERIMENTS; do
   bash "$BENCH_REPO/experiments/sweep_default_spill_disabled/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
 done
