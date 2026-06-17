@@ -21,6 +21,7 @@ for SF in $SFS; do
     --config "$CONFIG" \
     --data-source parquet \
     --parquet-dir "$DATA_DIR/tpch_parquet_sf${SF}" \
+    --engines sirius \
     --iterations "$ITERS" \
     --multi-session \
     "$SF" </dev/null 2>&1 | tee "$log" || true
