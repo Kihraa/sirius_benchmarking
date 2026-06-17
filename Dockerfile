@@ -13,10 +13,10 @@ ENV     PATH="/root/.pixi/bin:$PATH"
 #sirius
 ARG     SIRIUS_REPO=https://github.com/Kihraa/sirius.git
 ARG     SIRIUS_REF=dev
-RUN     git clone "$SIRIUS_REPO" /sirius-db/sirius
-WORKDIR /sirius-db/sirius
+RUN     git clone "$SIRIUS_REPO" /sirius
+WORKDIR /sirius
 RUN     git checkout "$SIRIUS_REF" && git submodule update --init --recursive
-RUN     git rev-parse HEAD | tee /sirius-db/sirius_commit.txt
+RUN     git rev-parse HEAD | tee /sirius_commit.txt
 RUN     pixi install
 RUN     pixi run make
 
