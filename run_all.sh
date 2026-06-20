@@ -54,3 +54,10 @@ USAGE_LIMIT_EXPS="sweep_usage_limit_0P0 sweep_usage_limit_0P1 sweep_usage_limit_
 for exp in $USAGE_LIMIT_EXPS; do
   bash "$BENCH_REPO/experiments/sweep_usage_limit/${exp}.sh" "$USAGE_LIMIT_RUN_DIR" "$SFS" "$ITERS"
 done
+
+DOWNGRADE_TRIGGER_RUN_DIR="$RUN_DIR/sweep_memory_downgrade_trigger"
+mkdir -p "$DOWNGRADE_TRIGGER_RUN_DIR"
+DOWNGRADE_TRIGGER_EXPS="sweep_trigger_0P0_stop_0P0 sweep_trigger_0P1_stop_0P07 sweep_trigger_0P5_stop_0P35 sweep_trigger_0P9_stop_0P63 sweep_trigger_0P95_stop_0P67 sweep_trigger_1P0_stop_0P7"
+for exp in $DOWNGRADE_TRIGGER_EXPS; do
+  bash "$BENCH_REPO/experiments/sweep_memory_downgrade_trigger/${exp}.sh" "$DOWNGRADE_TRIGGER_RUN_DIR" "$SFS" "$ITERS"
+done
