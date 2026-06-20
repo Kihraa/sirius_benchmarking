@@ -47,3 +47,10 @@ for exp_dir in $EXPERIMENT_DIRS; do
     bash "$BENCH_REPO/experiments/${exp_dir}/${exp}.sh" "$EXP_RUN_DIR" "$SFS" "$ITERS"
   done
 done
+
+USAGE_LIMIT_RUN_DIR="$RUN_DIR/sweep_usage_limit"
+mkdir -p "$USAGE_LIMIT_RUN_DIR"
+USAGE_LIMIT_EXPS="sweep_usage_limit_0P0 sweep_usage_limit_0P1 sweep_usage_limit_0P5 sweep_usage_limit_0P8 sweep_usage_limit_0P9 sweep_usage_limit_0P95"
+for exp in $USAGE_LIMIT_EXPS; do
+  bash "$BENCH_REPO/experiments/sweep_usage_limit/${exp}.sh" "$USAGE_LIMIT_RUN_DIR" "$SFS" "$ITERS"
+done
