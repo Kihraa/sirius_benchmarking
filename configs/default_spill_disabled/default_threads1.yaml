@@ -17,7 +17,7 @@ sirius:
       initial_number_pools: 4
     disk:
       disk_id: 0
-      capacity_bytes: 1099511627776
+      capacity_bytes: 0
       downgrade_root_dirs: ""
   executor:
     pipeline:

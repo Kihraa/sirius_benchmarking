@@ -30,10 +30,17 @@ for SF in $SFS; do
   bash "$BENCH_REPO/test_gen/tpch_duck.sh" "$SF" "$DATA_DIR/tpch_parquet_sf${SF}"
 done
 
+BASELINE_RUN_DIR="$RUN_DIR/sweep_baseline"
+mkdir -p "$BASELINE_RUN_DIR"
+bash "$BENCH_REPO/experiments/sweep_baseline.sh" "$BASELINE_RUN_DIR" "$SFS" "$ITERS"
+export DUCKDB_BASELINE_DIR="$BASELINE_RUN_DIR"
+
 EXPERIMENT_DIRS="sweep_default_spill_disabled sweep_default_spill_enabled"
 EXPERIMENTS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16"
 for exp_dir in $EXPERIMENT_DIRS; do
+  EXP_RUN_DIR="$RUN_DIR/$exp_dir"
+  mkdir -p "$EXP_RUN_DIR"
   for exp in $EXPERIMENTS; do
-    bash "$BENCH_REPO/experiments/${exp_dir}/${exp}.sh" "$RUN_DIR" "$SFS" "$ITERS"
+    bash "$BENCH_REPO/experiments/${exp_dir}/${exp}.sh" "$EXP_RUN_DIR" "$SFS" "$ITERS"
   done
 done

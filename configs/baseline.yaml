@@ -21,7 +21,7 @@ sirius:
       downgrade_root_dirs: ""
   executor:
     pipeline:
-      num_threads: 4
+      num_threads: 1
     duckdb_scan:
       num_threads: 4
       cache: table_gpu

@@ -17,8 +17,11 @@ mkdir -p "$OUT"
 
 for SF in $SFS; do
   log="$OUT/sf${SF}.log"
+  DUCKDB_BASELINE="${DUCKDB_BASELINE_DIR:?}/sf${SF}_${ITERS}iter"
   "$BENCH" \
     --config "$CONFIG" \
+    --duckdb-results "$DUCKDB_BASELINE" \
+    --parquet-dir "$DATA_DIR/tpch_parquet_sf${SF}" \
     --iterations "$ITERS" \
     --multi-session \
     "$SF" </dev/null 2>&1 | tee "$log" || true
