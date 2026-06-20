@@ -9,12 +9,15 @@ export DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 
 SFS="1 3 10 30 100"
 ITERS=5
+TIMEOUT=120
+export TIMEOUT
 NAME=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
     --sf) SFS="${2//,/ }"; shift 2 ;;
     --iterations) ITERS="$2"; shift 2 ;;
+    --timeout) TIMEOUT="$2"; export TIMEOUT; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
     *) echo "unknown flag: $1" >&2; exit 1 ;;
   esac

@@ -20,6 +20,7 @@ for SF in $SFS; do
   DUCKDB_BASELINE="${DUCKDB_BASELINE_DIR:?}/sf${SF}_${ITERS}iter"
   "$BENCH" \
     --config "$CONFIG" \
+    --timeout "${TIMEOUT:-120}" \
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$DATA_DIR/tpch_parquet_sf${SF}" \
     --iterations "$ITERS" \

@@ -18,6 +18,7 @@ for SF in $SFS; do
   log="$RUN_DIR/sf${SF}.log"
   "$BENCH" \
     --config "$CONFIG" \
+    --timeout "${TIMEOUT:-120}" \
     --parquet-dir "$DATA_DIR/tpch_parquet_sf${SF}" \
     --iterations "$ITERS" \
     --multi-session \
