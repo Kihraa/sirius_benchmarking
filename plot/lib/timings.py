@@ -22,29 +22,53 @@ def _parse_runtime(value: str) -> float | None:
         return None
 
 
-def warm_sirius_times(csv_path: Path) -> dict[str, float]:
-    warm: dict[str, list[float]] = {q: [] for q in QUERIES}
+def sirius_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
+    if hot:
+        warm: dict[str, list[float]] = {q: [] for q in QUERIES}
+        with csv_path.open(newline="") as handle:
+            reader = csv.DictReader(handle)
+            for row in reader:
+                if row.get("engine") != "sirius":
+                    continue
+                iteration = int(row["iteration"])
+                if iteration == 1:
+                    continue
+                query = row["query"]
+                if query not in warm:
+                    continue
+                runtime = _parse_runtime(row["runtime_s"])
+                if runtime is None:
+                    continue
+                warm[query].append(runtime)
+        return {q: min(times) for q, times in warm.items() if times}
+
+    cold: dict[str, float] = {}
     with csv_path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             if row.get("engine") != "sirius":
                 continue
-            iteration = int(row["iteration"])
-            if iteration == 1:
+            if int(row["iteration"]) != 1:
                 continue
             query = row["query"]
-            if query not in warm:
+            if query not in QUERIES:
                 continue
             runtime = _parse_runtime(row["runtime_s"])
             if runtime is None:
                 continue
-            warm[query].append(runtime)
-    return {q: min(times) for q, times in warm.items() if times}
+            cold[query] = runtime
+    return cold
+
+
+def warm_sirius_times(csv_path: Path) -> dict[str, float]:
+    return sirius_times(csv_path, hot=True)
 
 
 def build_query_sf_matrix(
     sweep_dir: Path,
     sfs: tuple[int, ...] = DEFAULT_SFS,
+    *,
+    hot: bool = True,
 ) -> tuple[np.ndarray, tuple[str, ...], tuple[str, ...]]:
     row_labels = tuple(f"sf{sf}" for sf in sfs)
     col_labels = QUERIES
@@ -54,7 +78,7 @@ def build_query_sf_matrix(
         csv_path = find_sf_timing_csv(sweep_dir, sf)
         if csv_path is None:
             continue
-        times = warm_sirius_times(csv_path)
+        times = sirius_times(csv_path, hot=hot)
         for col_idx, query in enumerate(QUERIES):
             if query in times:
                 matrix[row_idx, col_idx] = times[query]
@@ -92,12 +116,16 @@ def build_query_sf_validation_matrix(
     return matrix
 
 
-def warm_sirius_sum_incomplete(csv_path: Path) -> tuple[float | None, bool]:
-    times = warm_sirius_times(csv_path)
+def sirius_sum_incomplete(csv_path: Path, *, hot: bool = True) -> tuple[float | None, bool]:
+    times = sirius_times(csv_path, hot=hot)
     incomplete = any(query not in times for query in QUERIES)
     if not times:
         return None, True
     return sum(times.values()), incomplete
+
+
+def warm_sirius_sum_incomplete(csv_path: Path) -> tuple[float | None, bool]:
+    return sirius_sum_incomplete(csv_path, hot=True)
 
 
 def _fraction_token(token: str) -> str:
@@ -134,6 +162,8 @@ def build_sweep_sf_sum_matrix(
     sweep_names: tuple[str, ...],
     col_label_fn: Callable[[str], str],
     sfs: tuple[int, ...] = DEFAULT_SFS,
+    *,
+    hot: bool = True,
 ) -> tuple[np.ndarray, np.ndarray, tuple[str, ...], tuple[str, ...]]:
     row_labels = tuple(f"sf{sf}" for sf in sfs)
     col_labels = tuple(col_label_fn(name) for name in sweep_names)
@@ -150,7 +180,7 @@ def build_sweep_sf_sum_matrix(
             if csv_path is None:
                 incomplete[row_idx, col_idx] = True
                 continue
-            total, inc = warm_sirius_sum_incomplete(csv_path)
+            total, inc = sirius_sum_incomplete(csv_path, hot=hot)
             if total is not None:
                 matrix[row_idx, col_idx] = total
             incomplete[row_idx, col_idx] = inc
@@ -162,5 +192,7 @@ def build_threads_sf_sum_matrix(
     family_dir: Path,
     thread_sweep_names: tuple[str, ...],
     sfs: tuple[int, ...] = DEFAULT_SFS,
+    *,
+    hot: bool = True,
 ) -> tuple[np.ndarray, np.ndarray, tuple[str, ...], tuple[str, ...]]:
-    return build_sweep_sf_sum_matrix(family_dir, thread_sweep_names, thread_label, sfs)
+    return build_sweep_sf_sum_matrix(family_dir, thread_sweep_names, thread_label, sfs, hot=hot)

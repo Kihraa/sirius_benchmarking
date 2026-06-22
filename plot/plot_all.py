@@ -12,11 +12,18 @@ if str(BENCH_REPO) not in sys.path:
 
 from plot.lib.paths import bench_repo, list_runs
 from plot.lib.style import apply_style
-from plot.plot_scripts import query_timing_heatmap_query_sf, tpch_timing_heatmap_sweep_sf
+from plot.plot_scripts import (
+    query_timing_heatmap_cold_query_sf,
+    query_timing_heatmap_hot_query_sf,
+    tpch_timing_heatmap_cold_sweep_sf,
+    tpch_timing_heatmap_hot_sweep_sf,
+)
 
 PLOTS = {
-    query_timing_heatmap_query_sf.PLOT_NAME: query_timing_heatmap_query_sf.generate,
-    tpch_timing_heatmap_sweep_sf.PLOT_NAME: tpch_timing_heatmap_sweep_sf.generate,
+    query_timing_heatmap_hot_query_sf.PLOT_NAME: query_timing_heatmap_hot_query_sf.generate,
+    query_timing_heatmap_cold_query_sf.PLOT_NAME: query_timing_heatmap_cold_query_sf.generate,
+    tpch_timing_heatmap_hot_sweep_sf.PLOT_NAME: tpch_timing_heatmap_hot_sweep_sf.generate,
+    tpch_timing_heatmap_cold_sweep_sf.PLOT_NAME: tpch_timing_heatmap_cold_sweep_sf.generate,
 }
 
 

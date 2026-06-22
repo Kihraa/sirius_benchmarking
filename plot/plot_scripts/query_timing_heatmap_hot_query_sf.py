@@ -19,7 +19,8 @@ from plot.lib.timings import build_query_sf_matrix, build_query_sf_validation_ma
 
 logger = logging.getLogger(__name__)
 
-PLOT_NAME = "query_timing_heatmap_query_sf"
+PLOT_NAME = "query_timing_heatmap_hot_query_sf"
+TITLE_PREFIX = "Sirius hot best time"
 THREAD_SWEEP_NAMES = (
     "sweep_default_threads1",
     "sweep_default_threads4",
@@ -51,13 +52,25 @@ TARGETS = (
 )
 
 
-def _heatmap_title(run_name: str, family: str, sweep_dir: Path, sweep_names: tuple[str, ...] | None) -> str:
+def _heatmap_title(
+    run_name: str,
+    family: str,
+    sweep_dir: Path,
+    sweep_names: tuple[str, ...] | None,
+    title_prefix: str,
+) -> str:
     if sweep_names is None:
-        return f"Sirius warm best time — {run_name} / {family}"
-    return f"Sirius warm best time — {run_name} / {family} / {sweep_dir.name}"
+        return f"{title_prefix} — {run_name} / {family}"
+    return f"{title_prefix} — {run_name} / {family} / {sweep_dir.name}"
 
 
-def generate(bench_repo: Path, run_name: str) -> list[Path]:
+def generate_query_heatmaps(
+    run_name: str,
+    *,
+    hot: bool,
+    plot_name: str,
+    title_prefix: str,
+) -> list[Path]:
     written: list[Path] = []
 
     for family, sweep_names in TARGETS:
@@ -73,25 +86,34 @@ def generate(bench_repo: Path, run_name: str) -> list[Path]:
                 logger.warning("missing sweep dir: %s", sweep_dir)
                 continue
 
-            matrix, row_labels, col_labels = build_query_sf_matrix(sweep_dir)
+            matrix, row_labels, col_labels = build_query_sf_matrix(sweep_dir, hot=hot)
             mismatch = build_query_sf_validation_matrix(sweep_dir)
             if np.all(np.isnan(matrix)):
                 logger.warning("no timing data in %s", sweep_dir)
                 continue
 
-            out_path = figure_path_for_sweep(sweep_dir, PLOT_NAME)
+            out_path = figure_path_for_sweep(sweep_dir, plot_name)
             _render_heatmap(
                 matrix,
                 row_labels,
                 col_labels,
                 mismatch,
-                title=_heatmap_title(run_name, family, sweep_dir, sweep_names),
+                title=_heatmap_title(run_name, family, sweep_dir, sweep_names, title_prefix),
                 out_path=out_path,
             )
             written.append(out_path)
             logger.info("wrote %s", out_path)
 
     return written
+
+
+def generate(bench_repo: Path, run_name: str) -> list[Path]:
+    return generate_query_heatmaps(
+        run_name,
+        hot=True,
+        plot_name=PLOT_NAME,
+        title_prefix=TITLE_PREFIX,
+    )
 
 
 def _render_heatmap(
@@ -127,7 +149,6 @@ def _render_heatmap(
     ax_sum.set_xticks([0], ["Σ Q"])
     ax_sum.set_yticks([])
     ax_sum.tick_params(axis="x", labelsize=8)
-    # sharey links tick locators; set main y labels after clearing the sum axis
     ax_main.set_yticks(range(len(row_labels)), row_labels)
     ax_sum.tick_params(axis="y", left=False, right=False, labelleft=False, labelright=False)
 

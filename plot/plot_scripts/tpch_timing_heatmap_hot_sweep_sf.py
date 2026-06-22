@@ -18,7 +18,8 @@ from plot.lib.timings import (
 
 logger = logging.getLogger(__name__)
 
-PLOT_NAME = "tpch_timing_heatmap_sweep_sf"
+PLOT_NAME = "tpch_timing_heatmap_hot_sweep_sf"
+TITLE_PREFIX = "Sirius hot best time (Σ Q1–Q22)"
 THREAD_SWEEP_NAMES = (
     "sweep_default_threads1",
     "sweep_default_threads4",
@@ -49,7 +50,13 @@ TARGETS = (
 )
 
 
-def generate(bench_repo: Path, run_name: str) -> list[Path]:
+def generate_tpch_heatmaps(
+    run_name: str,
+    *,
+    hot: bool,
+    plot_name: str,
+    title_prefix: str,
+) -> list[Path]:
     written: list[Path] = []
 
     for family, sweep_names, x_label, col_label_fn in TARGETS:
@@ -59,26 +66,35 @@ def generate(bench_repo: Path, run_name: str) -> list[Path]:
             continue
 
         matrix, incomplete, row_labels, col_labels = build_sweep_sf_sum_matrix(
-            family_dir, sweep_names, col_label_fn
+            family_dir, sweep_names, col_label_fn, hot=hot
         )
         if np.all(np.isnan(matrix)):
             logger.warning("no timing data in %s", family_dir)
             continue
 
-        out_path = figure_path_for_sweep(family_dir, PLOT_NAME)
+        out_path = figure_path_for_sweep(family_dir, plot_name)
         _render_heatmap(
             matrix,
             row_labels,
             col_labels,
             incomplete,
             x_label=x_label,
-            title=f"Sirius warm best time (Σ Q1–Q22) — {run_name} / {family}",
+            title=f"{title_prefix} — {run_name} / {family}",
             out_path=out_path,
         )
         written.append(out_path)
         logger.info("wrote %s", out_path)
 
     return written
+
+
+def generate(bench_repo: Path, run_name: str) -> list[Path]:
+    return generate_tpch_heatmaps(
+        run_name,
+        hot=True,
+        plot_name=PLOT_NAME,
+        title_prefix=TITLE_PREFIX,
+    )
 
 
 def _figsize(n_cols: int) -> tuple[float, float]:
