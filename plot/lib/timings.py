@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from collections.abc import Callable
 from pathlib import Path
 
 import numpy as np
@@ -99,24 +100,47 @@ def warm_sirius_sum_incomplete(csv_path: Path) -> tuple[float | None, bool]:
     return sum(times.values()), incomplete
 
 
-def _thread_label(sweep_name: str) -> str:
+def _fraction_token(token: str) -> str:
+    if "P" not in token:
+        return token
+    whole, frac = token.split("P", 1)
+    if not frac:
+        return whole or "0"
+    return str(float(f"{whole or '0'}.{frac}"))
+
+
+def thread_label(sweep_name: str) -> str:
     prefix = "sweep_default_threads"
     if sweep_name.startswith(prefix):
         return sweep_name[len(prefix) :]
     return sweep_name
 
 
-def build_threads_sf_sum_matrix(
+def usage_limit_label(sweep_name: str) -> str:
+    token = sweep_name.removeprefix("sweep_usage_limit_")
+    return _fraction_token(token)
+
+
+def downgrade_trigger_label(sweep_name: str) -> str:
+    body = sweep_name.removeprefix("sweep_trigger_")
+    if "_stop_" not in body:
+        return body
+    trigger, stop = body.split("_stop_", 1)
+    return f"{_fraction_token(trigger)}/{_fraction_token(stop)}"
+
+
+def build_sweep_sf_sum_matrix(
     family_dir: Path,
-    thread_sweep_names: tuple[str, ...],
+    sweep_names: tuple[str, ...],
+    col_label_fn: Callable[[str], str],
     sfs: tuple[int, ...] = DEFAULT_SFS,
 ) -> tuple[np.ndarray, np.ndarray, tuple[str, ...], tuple[str, ...]]:
     row_labels = tuple(f"sf{sf}" for sf in sfs)
-    col_labels = tuple(_thread_label(name) for name in thread_sweep_names)
-    matrix = np.full((len(sfs), len(thread_sweep_names)), np.nan, dtype=float)
-    incomplete = np.zeros((len(sfs), len(thread_sweep_names)), dtype=bool)
+    col_labels = tuple(col_label_fn(name) for name in sweep_names)
+    matrix = np.full((len(sfs), len(sweep_names)), np.nan, dtype=float)
+    incomplete = np.zeros((len(sfs), len(sweep_names)), dtype=bool)
 
-    for col_idx, sweep_name in enumerate(thread_sweep_names):
+    for col_idx, sweep_name in enumerate(sweep_names):
         sweep_dir = family_dir / sweep_name
         if not sweep_dir.is_dir():
             incomplete[:, col_idx] = True
@@ -132,3 +156,11 @@ def build_threads_sf_sum_matrix(
             incomplete[row_idx, col_idx] = inc
 
     return matrix, incomplete, row_labels, col_labels
+
+
+def build_threads_sf_sum_matrix(
+    family_dir: Path,
+    thread_sweep_names: tuple[str, ...],
+    sfs: tuple[int, ...] = DEFAULT_SFS,
+) -> tuple[np.ndarray, np.ndarray, tuple[str, ...], tuple[str, ...]]:
+    return build_sweep_sf_sum_matrix(family_dir, thread_sweep_names, thread_label, sfs)
