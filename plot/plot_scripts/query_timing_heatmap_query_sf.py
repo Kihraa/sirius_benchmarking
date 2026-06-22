@@ -26,10 +26,28 @@ THREAD_SWEEP_NAMES = (
     "sweep_default_threads8",
     "sweep_default_threads16",
 )
+USAGE_LIMIT_SWEEP_NAMES = (
+    "sweep_usage_limit_0P0",
+    "sweep_usage_limit_0P1",
+    "sweep_usage_limit_0P5",
+    "sweep_usage_limit_0P8",
+    "sweep_usage_limit_0P9",
+    "sweep_usage_limit_0P95",
+)
+DOWNGRADE_TRIGGER_SWEEP_NAMES = (
+    "sweep_trigger_0P0_stop_0P0",
+    "sweep_trigger_0P1_stop_0P07",
+    "sweep_trigger_0P5_stop_0P35",
+    "sweep_trigger_0P9_stop_0P63",
+    "sweep_trigger_0P95_stop_0P67",
+    "sweep_trigger_1P0_stop_0P7",
+)
 TARGETS = (
     ("sweep_default_spill_disabled", THREAD_SWEEP_NAMES),
     ("sweep_default_spill_enabled", THREAD_SWEEP_NAMES),
     ("sweep_baseline", None),
+    ("sweep_memory_usage_limit", USAGE_LIMIT_SWEEP_NAMES),
+    ("sweep_memory_downgrade_trigger", DOWNGRADE_TRIGGER_SWEEP_NAMES),
 )
 
 
