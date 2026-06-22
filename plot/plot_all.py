@@ -20,15 +20,8 @@ PLOTS = {
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate benchmark figures from results/")
-    parser.add_argument("--run", help="Run name (e.g. run09). Default: all runs in results/")
-    parser.add_argument(
-        "--plot",
-        action="append",
-        dest="plots",
-        choices=sorted(PLOTS),
-        help="Plot to generate (repeatable). Default: all registered plots.",
-    )
+    parser = argparse.ArgumentParser(description="Generate benchmark figures from results/", add_help=False)
+    parser.add_argument("--run", required=True, help="Run name (e.g. run09)")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -41,20 +34,21 @@ def main() -> int:
     repo = bench_repo()
     runs = list_runs(args.run)
     if not runs:
-        logging.error("no runs found%s", f" for {args.run!r}" if args.run else "")
+        logging.error("run not found: %s", args.run)
         return 1
 
-    plot_names = args.plots or sorted(PLOTS)
+    run_name = runs[0]
     written: list[Path] = []
 
-    for run_name in runs:
-        for plot_name in plot_names:
+    for plot_name in sorted(PLOTS):
+        try:
             paths = PLOTS[plot_name](repo, run_name)
             written.extend(paths)
+        except Exception:
+            logging.exception("plot %s failed; continuing", plot_name)
 
     if not written:
         logging.warning("no figures written")
-        return 1
 
     print(f"wrote {len(written)} figure(s):")
     for path in written:
