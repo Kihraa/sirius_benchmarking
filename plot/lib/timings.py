@@ -89,3 +89,46 @@ def build_query_sf_validation_matrix(
                 matrix[row_idx, col_idx] = True
 
     return matrix
+
+
+def warm_sirius_sum_incomplete(csv_path: Path) -> tuple[float | None, bool]:
+    times = warm_sirius_times(csv_path)
+    incomplete = any(query not in times for query in QUERIES)
+    if not times:
+        return None, True
+    return sum(times.values()), incomplete
+
+
+def _thread_label(sweep_name: str) -> str:
+    prefix = "sweep_default_threads"
+    if sweep_name.startswith(prefix):
+        return sweep_name[len(prefix) :]
+    return sweep_name
+
+
+def build_threads_sf_sum_matrix(
+    family_dir: Path,
+    thread_sweep_names: tuple[str, ...],
+    sfs: tuple[int, ...] = DEFAULT_SFS,
+) -> tuple[np.ndarray, np.ndarray, tuple[str, ...], tuple[str, ...]]:
+    row_labels = tuple(f"sf{sf}" for sf in sfs)
+    col_labels = tuple(_thread_label(name) for name in thread_sweep_names)
+    matrix = np.full((len(sfs), len(thread_sweep_names)), np.nan, dtype=float)
+    incomplete = np.zeros((len(sfs), len(thread_sweep_names)), dtype=bool)
+
+    for col_idx, sweep_name in enumerate(thread_sweep_names):
+        sweep_dir = family_dir / sweep_name
+        if not sweep_dir.is_dir():
+            incomplete[:, col_idx] = True
+            continue
+        for row_idx, sf in enumerate(sfs):
+            csv_path = find_sf_timing_csv(sweep_dir, sf)
+            if csv_path is None:
+                incomplete[row_idx, col_idx] = True
+                continue
+            total, inc = warm_sirius_sum_incomplete(csv_path)
+            if total is not None:
+                matrix[row_idx, col_idx] = total
+            incomplete[row_idx, col_idx] = inc
+
+    return matrix, incomplete, row_labels, col_labels
