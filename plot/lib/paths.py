@@ -33,12 +33,25 @@ def figure_path_for_sweep(sweep_dir: Path, plot_name: str, ext: str = ".png") ->
     return figures_root() / rel / f"{plot_name}{ext}"
 
 
-def find_sf_timing_csv(sweep_dir: Path, sf: int) -> Path | None:
+def find_sf_iter_dir(sweep_dir: Path, sf: int) -> Path | None:
     pattern = f"sf{sf}_*iter"
     for child in sorted(sweep_dir.glob(pattern)):
-        if not child.is_dir():
-            continue
-        csv_path = child / "timings.csv"
-        if csv_path.is_file():
-            return csv_path
+        if child.is_dir():
+            return child
     return None
+
+
+def find_sf_timing_csv(sweep_dir: Path, sf: int) -> Path | None:
+    iter_dir = find_sf_iter_dir(sweep_dir, sf)
+    if iter_dir is None:
+        return None
+    csv_path = iter_dir / "timings.csv"
+    return csv_path if csv_path.is_file() else None
+
+
+def find_sf_validation_csv(sweep_dir: Path, sf: int) -> Path | None:
+    iter_dir = find_sf_iter_dir(sweep_dir, sf)
+    if iter_dir is None:
+        return None
+    csv_path = iter_dir / "validation.csv"
+    return csv_path if csv_path.is_file() else None

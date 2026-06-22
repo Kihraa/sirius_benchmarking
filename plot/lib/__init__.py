@@ -7,13 +7,14 @@ from plot.lib.style import (
     log_norm,
     save_figure,
 )
-from plot.lib.timings import build_query_sf_matrix, warm_sirius_times
+from plot.lib.timings import build_query_sf_matrix, build_query_sf_validation_matrix, warm_sirius_times
 
 __all__ = [
     "annotation_color",
     "apply_style",
     "bench_repo",
     "build_query_sf_matrix",
+    "build_query_sf_validation_matrix",
     "figure_path_for_sweep",
     "figures_root",
     "list_runs",
