@@ -12,10 +12,10 @@ if str(BENCH_REPO) not in sys.path:
 
 from plot.lib.paths import bench_repo, list_runs
 from plot.lib.style import apply_style
-from plot.plot_scripts import query_timing_heatmap_sf_query
+from plot.plot_scripts import query_timing_heatmap_query_sf
 
 PLOTS = {
-    query_timing_heatmap_sf_query.PLOT_NAME: query_timing_heatmap_sf_query.generate,
+    query_timing_heatmap_query_sf.PLOT_NAME: query_timing_heatmap_query_sf.generate,
 }
 
 

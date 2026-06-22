@@ -40,11 +40,10 @@ def warm_sirius_times(csv_path: Path) -> dict[str, float]:
     return {q: min(times) for q, times in warm.items() if times}
 
 
-def build_sf_query_matrix(
+def build_query_sf_matrix(
     sweep_dir: Path,
     sfs: tuple[int, ...] = DEFAULT_SFS,
-) -> tuple[np.ndarray, tuple[str, ...], tuple[str, ...]]:
-    row_labels = tuple(f"SF{sf}" for sf in sfs)
+) -> tuple[np.ndarray, tuple[int, ...], tuple[str, ...]]:
     col_labels = QUERIES
     matrix = np.full((len(sfs), len(QUERIES)), np.nan, dtype=float)
 
@@ -57,4 +56,4 @@ def build_sf_query_matrix(
             if query in times:
                 matrix[row_idx, col_idx] = times[query]
 
-    return matrix, row_labels, col_labels
+    return matrix, sfs, col_labels
