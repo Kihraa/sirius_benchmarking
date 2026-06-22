@@ -45,7 +45,7 @@ def build_query_sf_matrix(
     sweep_dir: Path,
     sfs: tuple[int, ...] = DEFAULT_SFS,
 ) -> tuple[np.ndarray, tuple[str, ...], tuple[str, ...]]:
-    row_labels = tuple(f"SF{sf}" for sf in sfs)
+    row_labels = tuple(f"sf{sf}" for sf in sfs)
     col_labels = QUERIES
     matrix = np.full((len(sfs), len(QUERIES)), np.nan, dtype=float)
 
