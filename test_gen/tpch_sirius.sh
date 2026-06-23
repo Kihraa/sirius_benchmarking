@@ -8,5 +8,5 @@ SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 
 [ -d "$OUT" ] && exit 0
 
-(cd "$SIRIUS_REPO/test/tpch_performance" && \
-  pixi run bash generate_tpch_data.sh "$SF" --format parquet --output "$OUT" --jobs "${JOBS:-$(nproc)}")
+bash "$SIRIUS_REPO/test/tpch_performance/generate_tpch_data.sh" \
+  "$SF" --format parquet --output "$OUT" --jobs "${JOBS:-$(nproc)}"
