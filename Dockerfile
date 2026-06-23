@@ -20,6 +20,10 @@ RUN     git rev-parse HEAD | tee /sirius_commit.txt
 RUN     pixi install
 RUN     pixi run make
 
+WORKDIR /sirius/test/tpch_performance
+RUN     pixi install
+WORKDIR /sirius
+
 #Nsight
 RUN     echo "deb http://developer.download.nvidia.com/devtools/repos/ubuntu2404/amd64 /" > /etc/apt/sources.list.d/nvidia-devtools.list
 RUN     apt-key adv --fetch-keys http://developer.download.nvidia.com/devtools/repos/ubuntu2404/amd64/nvidia.pub

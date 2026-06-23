@@ -33,6 +33,15 @@ for SF in $SFS; do
   bash "$BENCH_REPO/test_gen/tpch_duck.sh" "$SF" "$DATA_DIR/tpch_parquet_sf${SF}"
 done
 
+for SF in $SFS; do
+  bash "$BENCH_REPO/test_gen/tpch_sirius.sh" "$SF" "$DATA_DIR/tpch_parquet_sirius_sf${SF}"
+done
+
+SIRIUS_PARQUET_BASELINE="$RUN_DIR/sirius_parquet/sweep_baseline"
+mkdir -p "$SIRIUS_PARQUET_BASELINE"
+bash "$BENCH_REPO/experiments/sirius_parquet/sweep_baseline.sh" \
+  "$SIRIUS_PARQUET_BASELINE" "$SFS" "$ITERS"
+
 BASELINE_RUN_DIR="$RUN_DIR/sweep_baseline"
 mkdir -p "$BASELINE_RUN_DIR"
 bash "$BENCH_REPO/experiments/sweep_baseline.sh" "$BASELINE_RUN_DIR" "$SFS" "$ITERS"
