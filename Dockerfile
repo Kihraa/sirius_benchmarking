@@ -3,7 +3,7 @@ FROM nvidia/cuda:13.2.1-devel-ubuntu24.04
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /workspace
 
-RUN     apt-get update && apt-get install -y --no-install-recommends git build-essential curl gnupg bc python3 python3-pip
+RUN     apt-get update && apt-get install -y --no-install-recommends git build-essential curl gnupg bc python3 python3-pip python-is-python3
 
 #get pixi for sirius build
 ENV     PIXI_VERSION=v0.70.2
