@@ -15,11 +15,12 @@ export TIMEOUT
 NAME=""
 SELECTED=""
 
-VALID_EXPERIMENTS="sirius_parquet sweep_default_spill_disabled sweep_default_spill_enabled sweep_memory_usage_limit sweep_memory_downgrade_trigger"
+VALID_EXPERIMENTS="sirius_parquet sweep_baseline sweep_default_spill_disabled sweep_default_spill_enabled sweep_memory_usage_limit sweep_memory_downgrade_trigger"
 
 normalize_experiment() {
   case "$1" in
     sirius_parquet|sirius_parquet/sweep_baseline) echo sirius_parquet ;;
+    sweep_baseline) echo sweep_baseline ;;
     sweep_default_spill_disabled) echo sweep_default_spill_disabled ;;
     sweep_default_spill_enabled) echo sweep_default_spill_enabled ;;
     sweep_memory_usage_limit) echo sweep_memory_usage_limit ;;
