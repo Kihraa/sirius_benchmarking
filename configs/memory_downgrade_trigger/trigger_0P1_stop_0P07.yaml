@@ -8,7 +8,7 @@ sirius:
       downgrade_trigger_fraction: 0.1
       downgrade_stop_fraction: 0.07
     host:
-      capacity_bytes: 8589934592
+      capacity_bytes: 64Gi
       reservation_limit_fraction: 0.9
       downgrade_trigger_fraction: 0.8
       downgrade_stop_fraction: 0.7
