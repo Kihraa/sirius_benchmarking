@@ -6,6 +6,8 @@ BENCH_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export BENCH_REPO
 export SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 export DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
+SIRIUS_SPILL_DIR="${SIRIUS_SPILL_DIR:-/tmp/sirius_spill}"
+export SIRIUS_SPILL_DIR
 
 SFS="1 3 10 30 100"
 ITERS=5
@@ -68,7 +70,7 @@ if [ -z "$NAME" ]; then
   NAME="$(printf 'run%02d' $(( $(find "$BENCH_REPO/results" -maxdepth 1 -name 'run*' -type d 2>/dev/null | wc -l) + 1 )))"
 fi
 RUN_DIR="$BENCH_REPO/results/$NAME"
-mkdir -p "$RUN_DIR"
+mkdir -p "$RUN_DIR" "$SIRIUS_SPILL_DIR"
 
 DEFAULT_THREAD_EXPS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16"
 USAGE_LIMIT_EXPS="sweep_usage_limit_0P0 sweep_usage_limit_0P1 sweep_usage_limit_0P5 sweep_usage_limit_0P8 sweep_usage_limit_0P9 sweep_usage_limit_0P95"
