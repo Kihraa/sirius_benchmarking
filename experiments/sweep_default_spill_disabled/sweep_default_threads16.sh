@@ -7,7 +7,7 @@ SFS="$2"
 ITERS="$3"
 
 BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-SIRIUS_REPO="${SIRIUS_REPO:-/sirius-db/sirius}"
+SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 BENCH="$SIRIUS_REPO/test/tpch_performance/benchmark_and_validate.sh"
 CONFIG="$BENCH_REPO/configs/default_spill_disabled/default_threads16.yaml"

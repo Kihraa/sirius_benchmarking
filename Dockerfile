@@ -6,19 +6,19 @@ WORKDIR /workspace
 RUN     apt-get update && apt-get install -y --no-install-recommends git build-essential curl gnupg bc python3 python3-pip python-is-python3
 
 #get pixi for sirius build
-ENV     PIXI_VERSION=v0.70.2
+ENV     PIXI_VERSION=v0.71.0
 RUN     curl -fsSL https://pixi.sh/install.sh | PIXI_VERSION=${PIXI_VERSION} bash
 ENV     PATH="/root/.pixi/bin:$PATH"
 
 #sirius
-ARG     SIRIUS_REPO=https://github.com/Kihraa/sirius.git
-ARG     SIRIUS_REF=dev
+ARG     SIRIUS_REPO=https://github.com/sirius-db/sirius.git
+ARG     SIRIUS_REF=bb937b8dd2a57b2f6b6c60679a02209ffb5013d4
 RUN     git clone "$SIRIUS_REPO" /sirius
 WORKDIR /sirius
 RUN     git checkout "$SIRIUS_REF" && git submodule update --init --recursive
 RUN     git rev-parse HEAD | tee /sirius_commit.txt
 RUN     pixi install
-RUN     pixi run make
+RUN     pixi run make -j"$(nproc)"
 
 # tpchgen-rs parquet generation (generate_tpch_data.sh standalone: rust + pyarrow)
 RUN     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y

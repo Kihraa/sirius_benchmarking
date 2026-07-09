@@ -4,7 +4,7 @@ set -euo pipefail
 
 SF="$1"
 OUT="$2"
-DUCKDB="${DUCKDB:-${SIRIUS_REPO:-/sirius-db/sirius}/build/release/duckdb}"
+DUCKDB="${DUCKDB:-${SIRIUS_REPO:-/sirius}/build/release/duckdb}"
 
 [ -d "$OUT" ] && exit 0
 
