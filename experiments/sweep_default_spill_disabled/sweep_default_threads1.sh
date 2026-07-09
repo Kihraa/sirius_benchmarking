@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Sirius defaults but pipeline num_threads=1, multi-session, duckdb parquet.
+# Sirius defaults but pipeline num_threads=1, single-session, duckdb parquet.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -26,7 +26,6 @@ for SF in $SFS; do
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
-    --multi-session \
     --pinning-mode per-query \
     --pin-after-iteration 1 \
     "$SF" </dev/null 2>&1 | tee "$log" || true

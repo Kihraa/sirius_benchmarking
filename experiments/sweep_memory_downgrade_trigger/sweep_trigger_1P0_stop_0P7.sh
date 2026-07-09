@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Baseline config, downgrade_trigger_fraction=1.0, downgrade_stop_fraction=0.7, multi-session.
+# Baseline config, downgrade_trigger_fraction=1.0, downgrade_stop_fraction=0.7, single-session.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -26,7 +26,6 @@ for SF in $SFS; do
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
-    --multi-session \
     --pinning-mode per-query \
     --pin-after-iteration 1 \
     "$SF" </dev/null 2>&1 | tee "$log" || true
