@@ -24,6 +24,7 @@ for SF in $SFS; do
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
     --multi-session \
+    --pinning-mode per-query \
     "$SF" </dev/null 2>&1 | tee "$log" || true
   src="$(grep -m1 '^Run directory: ' "$log" | sed 's/^Run directory: //')"
   if [ -n "$src" ] && [ -d "$src" ]; then
