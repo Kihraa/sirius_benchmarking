@@ -28,6 +28,7 @@ for SF in $SFS; do
     --iterations "$ITERS" \
     --multi-session \
     --pinning-mode per-query \
+    --pin-after-iteration 1 \
     "$SF" </dev/null 2>&1 | tee "$log" || true
   src="$(grep -m1 '^Run directory: ' "$log" | sed 's/^Run directory: //')"
   if [ -n "$src" ] && [ -d "$src" ]; then

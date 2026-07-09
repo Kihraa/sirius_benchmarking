@@ -8,6 +8,7 @@ export SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 export DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 SIRIUS_SPILL_DIR="${SIRIUS_SPILL_DIR:-/tmp/sirius_spill}"
 export SIRIUS_SPILL_DIR
+export SIRIUS_PIN_TIER="${SIRIUS_PIN_TIER:-host}"
 
 SFS="1 3 10 30 100"
 ITERS=5
