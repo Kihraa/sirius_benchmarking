@@ -3,11 +3,14 @@
 set -euo pipefail
 
 BENCH_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-export BENCH_REPO
+ROOT_REPO="$(cd "$BENCH_REPO/.." && pwd)"
+VARIANT=new
+export BENCH_REPO ROOT_REPO VARIANT
 export SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 export DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 SIRIUS_SPILL_DIR="${SIRIUS_SPILL_DIR:-/tmp/sirius_spill}"
 export SIRIUS_SPILL_DIR
+export SIRIUS_PIN_TIER="${SIRIUS_PIN_TIER:-host}"
 
 SFS="1 3 10 30 100"
 ITERS=5
@@ -67,9 +70,9 @@ run_exp() {
 }
 
 if [ -z "$NAME" ]; then
-  NAME="$(printf 'run%02d' $(( $(find "$BENCH_REPO/results" -maxdepth 1 -name 'run*' -type d 2>/dev/null | wc -l) + 1 )))"
+  NAME="$(printf 'run%02d' $(( $(find "$ROOT_REPO/results" -maxdepth 1 -name 'run*' -type d 2>/dev/null | wc -l) + 1 )))"
 fi
-RUN_DIR="$BENCH_REPO/results/$NAME"
+RUN_DIR="$ROOT_REPO/results/$NAME/$VARIANT"
 mkdir -p "$RUN_DIR" "$SIRIUS_SPILL_DIR"
 
 DEFAULT_THREAD_EXPS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16"

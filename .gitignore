@@ -1,0 +1,10 @@
+.gitignore
+sirius_benchmarking.code-workspace
+*.un~
+.DS_Store
+
+results/**
+nsys/**
+figures/**
+sven_benchmarking/**
+sven_benchmarking

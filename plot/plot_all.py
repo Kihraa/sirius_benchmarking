@@ -30,6 +30,7 @@ PLOTS = {
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate benchmark figures from results/", add_help=False)
     parser.add_argument("--run", required=True, help="Run name (e.g. run09)")
+    parser.add_argument("--variant", required=True, choices=["old", "new"], help="Benchmark variant")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -40,9 +41,9 @@ def main() -> int:
 
     apply_style()
     repo = bench_repo()
-    runs = list_runs(args.run)
+    runs = list_runs(args.run, args.variant)
     if not runs:
-        logging.error("run not found: %s", args.run)
+        logging.error("run not found: %s/%s", args.run, args.variant)
         return 1
 
     run_name = runs[0]
@@ -50,7 +51,7 @@ def main() -> int:
 
     for plot_name in sorted(PLOTS):
         try:
-            paths = PLOTS[plot_name](repo, run_name)
+            paths = PLOTS[plot_name](repo, run_name, args.variant)
             written.extend(paths)
         except Exception:
             logging.exception("plot %s failed; continuing", plot_name)

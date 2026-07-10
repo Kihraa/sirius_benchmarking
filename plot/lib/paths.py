@@ -18,11 +18,13 @@ def figures_root() -> Path:
     return bench_repo() / "figures"
 
 
-def list_runs(run: str | None = None) -> list[str]:
+def list_runs(run: str | None = None, variant: str | None = None) -> list[str]:
     root = results_root()
     if not root.is_dir():
         return []
     if run is not None:
+        if variant is not None:
+            return [run] if (root / run / variant).is_dir() else []
         return [run] if (root / run).is_dir() else []
     return sorted(p.name for p in root.iterdir() if p.is_dir() and re.fullmatch(r"run\d+", p.name))
 

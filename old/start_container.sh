@@ -1,5 +1,6 @@
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 docker run --rm -it --gpus all \
   --security-opt seccomp=unconfined \
   --cap-add SYS_NICE \
-  -v "$(pwd)":/bench \
+  -v "$ROOT":/bench \
   sirius-bench

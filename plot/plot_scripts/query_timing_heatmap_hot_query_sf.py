@@ -67,6 +67,7 @@ def _heatmap_title(
 
 def generate_query_heatmaps(
     run_name: str,
+    variant: str,
     *,
     hot: bool,
     plot_name: str,
@@ -75,7 +76,7 @@ def generate_query_heatmaps(
     written: list[Path] = []
 
     for family, sweep_names in TARGETS:
-        family_dir = results_root() / run_name / family
+        family_dir = results_root() / run_name / variant / family
         if not family_dir.is_dir():
             logger.warning("missing sweep family: %s", family_dir)
             continue
@@ -108,9 +109,10 @@ def generate_query_heatmaps(
     return written
 
 
-def generate(bench_repo: Path, run_name: str) -> list[Path]:
+def generate(bench_repo: Path, run_name: str, variant: str) -> list[Path]:
     return generate_query_heatmaps(
         run_name,
+        variant,
         hot=True,
         plot_name=PLOT_NAME,
         title_prefix=TITLE_PREFIX,
