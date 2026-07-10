@@ -1,0 +1,39 @@
+sirius:
+  topology:
+    num_gpus: 1
+  memory:
+    gpu:
+      usage_limit_fraction: 0.95
+      reservation_limit_fraction: 0.9
+      downgrade_trigger_fraction: 1.0
+      downgrade_stop_fraction: 0.7
+    host:
+      capacity_bytes: 64Gi
+      reservation_limit_fraction: 0.9
+      downgrade_trigger_fraction: 0.8
+      downgrade_stop_fraction: 0.7
+      block_size: 1048576
+      pool_size: 128
+      initial_number_pools: 4
+    disk:
+      disk_id: 0
+      capacity_bytes: 1099511627776
+      downgrade_root_dirs: "/tmp/sirius_spill"
+  executor:
+    pipeline:
+      num_threads: 1
+    duckdb_scan:
+      num_threads: 4
+      cache: table_gpu
+    task_creator:
+      num_threads: 2
+    downgrade:
+      num_threads: 4
+      monitor_period_ms: 10
+  operator_params:
+    scan_task_batch_size: 536870912
+    default_scan_task_varchar_size: 256
+    max_sort_partition_bytes: 0
+    hash_partition_bytes: 536870912
+    concat_batch_bytes: 536870912
+    max_build_hash_table_bytes: 524288000
