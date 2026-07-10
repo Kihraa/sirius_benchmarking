@@ -3,11 +3,24 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/ensure_image.sh
-source "$ROOT/scripts/ensure_image.sh"
-
 NAME=""
+NO_CACHE=0
 FORWARD_ARGS=()
+
+ensure_image() {
+  local tag="$1" context="$2"
+  if [ "$NO_CACHE" = 1 ]; then
+    echo "rebuilding $tag from $context (--no-cache)"
+    docker build --no-cache -t "$tag" "$context"
+    return 0
+  fi
+  if docker image inspect "$tag" >/dev/null 2>&1; then
+    echo "image $tag already exists"
+    return 0
+  fi
+  echo "building $tag from $context"
+  docker build -t "$tag" "$context"
+}
 
 run_variant() {
   local tag="$1" script="$2"
@@ -40,6 +53,10 @@ while [ $# -gt 0 ]; do
       ;;
     --nsys)
       FORWARD_ARGS+=(--nsys)
+      shift
+      ;;
+    --no-cache)
+      NO_CACHE=1
       shift
       ;;
     --experiment)
