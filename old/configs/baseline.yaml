@@ -21,7 +21,7 @@ sirius:
       downgrade_root_dirs: "/tmp/sirius_spill"
   executor:
     pipeline:
-      num_threads: 1
+      num_threads: 4
     duckdb_scan:
       num_threads: 4
       cache: table_gpu

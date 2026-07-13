@@ -26,11 +26,12 @@ PLOTS = {
     tpch_timing_heatmap_cold_sweep_sf.PLOT_NAME: tpch_timing_heatmap_cold_sweep_sf.generate,
 }
 
+VARIANTS = ("old", "new")
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate benchmark figures from results/", add_help=False)
     parser.add_argument("--run", required=True, help="Run name (e.g. run09)")
-    parser.add_argument("--variant", required=True, choices=["old", "new"], help="Benchmark variant")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
@@ -41,20 +42,24 @@ def main() -> int:
 
     apply_style()
     repo = bench_repo()
-    runs = list_runs(args.run, args.variant)
+    runs = list_runs(args.run)
     if not runs:
-        logging.error("run not found: %s/%s", args.run, args.variant)
+        logging.error("run not found: %s", args.run)
         return 1
 
     run_name = runs[0]
     written: list[Path] = []
 
-    for plot_name in sorted(PLOTS):
-        try:
-            paths = PLOTS[plot_name](repo, run_name, args.variant)
-            written.extend(paths)
-        except Exception:
-            logging.exception("plot %s failed; continuing", plot_name)
+    for variant in VARIANTS:
+        if not list_runs(run_name, variant):
+            logging.warning("skipping %s/%s: no results", run_name, variant)
+            continue
+        for plot_name in sorted(PLOTS):
+            try:
+                paths = PLOTS[plot_name](repo, run_name, variant)
+                written.extend(paths)
+            except Exception:
+                logging.exception("plot %s failed for %s/%s; continuing", plot_name, run_name, variant)
 
     if not written:
         logging.warning("no figures written")

@@ -21,7 +21,7 @@ sirius:
       downgrade_root_dirs: "/tmp/sirius_spill"
   executor:
     pipeline:
-      num_threads: 1
+      num_threads: 4
     scan_manager:
       num_threads: 4
     task_creator:
