@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Baseline config, usage_limit_fraction=0, disk spill enabled, single-session.
+# Sirius defaults but pipeline num_threads=64, single-session, duckdb parquet.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -10,10 +10,10 @@ BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 BENCH="$SIRIUS_REPO/test/tpch_performance/benchmark_and_validate.sh"
-CONFIG="$BENCH_REPO/configs/memory_usage_limit/usage_limit_0P0.yaml"
+CONFIG="$BENCH_REPO/configs/default_spill_disabled/default_threads64.yaml"
 
-OUT="$RUN_DIR/sweep_usage_limit_0P0"
-mkdir -p "$OUT" /tmp/sirius_spill
+OUT="$RUN_DIR/sweep_default_threads64"
+mkdir -p "$OUT"
 
 for SF in $SFS; do
   parquet_dir="$DATA_DIR/tpch_parquet_sf${SF}"

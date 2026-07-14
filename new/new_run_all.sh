@@ -75,8 +75,8 @@ fi
 RUN_DIR="$ROOT_REPO/results/$NAME/$VARIANT"
 mkdir -p "$RUN_DIR" "$SIRIUS_SPILL_DIR"
 
-DEFAULT_THREAD_EXPS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16"
-USAGE_LIMIT_EXPS="sweep_usage_limit_0P0 sweep_usage_limit_0P1 sweep_usage_limit_0P5 sweep_usage_limit_0P8 sweep_usage_limit_0P9 sweep_usage_limit_0P95"
+DEFAULT_THREAD_EXPS="sweep_default_threads1 sweep_default_threads4 sweep_default_threads8 sweep_default_threads16 sweep_default_threads32 sweep_default_threads64 sweep_default_threads128"
+USAGE_LIMIT_EXPS="sweep_usage_limit_0P1 sweep_usage_limit_0P3 sweep_usage_limit_0P5 sweep_usage_limit_0P7 sweep_usage_limit_0P9"
 DOWNGRADE_TRIGGER_EXPS="sweep_trigger_0P0_stop_0P0 sweep_trigger_0P1_stop_0P07 sweep_trigger_0P5_stop_0P35 sweep_trigger_0P9_stop_0P63 sweep_trigger_0P95_stop_0P67 sweep_trigger_1P0_stop_0P7"
 
 for SF in $SFS; do

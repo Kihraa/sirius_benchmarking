@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Baseline config, usage_limit_fraction=0.95, disk spill enabled, single-session.
+# Sirius defaults, disk spill enabled (/tmp/sirius_spill), pipeline num_threads=64, single-session.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -10,9 +10,9 @@ BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 BENCH="$SIRIUS_REPO/test/tpch_performance/benchmark_and_validate.sh"
-CONFIG="$BENCH_REPO/configs/memory_usage_limit/usage_limit_0P95.yaml"
+CONFIG="$BENCH_REPO/configs/default_spill_enabled/default_threads64.yaml"
 
-OUT="$RUN_DIR/sweep_usage_limit_0P95"
+OUT="$RUN_DIR/sweep_default_threads64"
 mkdir -p "$OUT" /tmp/sirius_spill
 
 for SF in $SFS; do

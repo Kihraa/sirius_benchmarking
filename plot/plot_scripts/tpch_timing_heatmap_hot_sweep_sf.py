@@ -25,14 +25,16 @@ THREAD_SWEEP_NAMES = (
     "sweep_default_threads4",
     "sweep_default_threads8",
     "sweep_default_threads16",
+    "sweep_default_threads32",
+    "sweep_default_threads64",
+    "sweep_default_threads128",
 )
 USAGE_LIMIT_SWEEP_NAMES = (
-    "sweep_usage_limit_0P0",
     "sweep_usage_limit_0P1",
+    "sweep_usage_limit_0P3",
     "sweep_usage_limit_0P5",
-    "sweep_usage_limit_0P8",
+    "sweep_usage_limit_0P7",
     "sweep_usage_limit_0P9",
-    "sweep_usage_limit_0P95",
 )
 DOWNGRADE_TRIGGER_SWEEP_NAMES = (
     "sweep_trigger_0P0_stop_0P0",

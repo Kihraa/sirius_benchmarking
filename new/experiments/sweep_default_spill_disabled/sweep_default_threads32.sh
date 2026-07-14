@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Baseline config, usage_limit_fraction=0.8, disk spill enabled, multi-session.
+# Sirius defaults but pipeline num_threads=32, single-session, duckdb parquet.
 set -euo pipefail
 
 RUN_DIR="$1"
@@ -10,10 +10,10 @@ BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 BENCH="$SIRIUS_REPO/test/tpch_performance/benchmark_and_validate.sh"
-CONFIG="$BENCH_REPO/configs/memory_usage_limit/usage_limit_0P8.yaml"
+CONFIG="$BENCH_REPO/configs/default_spill_disabled/default_threads32.yaml"
 
-OUT="$RUN_DIR/sweep_usage_limit_0P8"
-mkdir -p "$OUT" /tmp/sirius_spill
+OUT="$RUN_DIR/sweep_default_threads32"
+mkdir -p "$OUT"
 
 for SF in $SFS; do
   parquet_dir="$DATA_DIR/tpch_parquet_sf${SF}"
@@ -26,7 +26,8 @@ for SF in $SFS; do
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
-    --multi-session \
+    --pinning-mode per-query \
+    --pin-after-iteration 1 \
     "$SF" </dev/null 2>&1 | tee "$log" || true
   src="$(grep -m1 '^Run directory: ' "$log" | sed 's/^Run directory: //')"
   if [ -n "$src" ] && [ -d "$src" ]; then
