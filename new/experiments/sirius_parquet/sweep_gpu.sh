@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Baseline Sirius config + DuckDB reference run per SF on DuckDB parquet (GPU pinning).
+# Baseline Sirius config + DuckDB reference run per SF on Sirius tpchgen-rs parquet (GPU pinning).
 set -euo pipefail
 
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
 
 RUN_DIR="$1"
 SFS="$2"
 ITERS="$3"
 
-BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+BENCH_REPO="${BENCH_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 SIRIUS_REPO="${SIRIUS_REPO:-/sirius}"
 DATA_DIR="${DATA_DIR:-$SIRIUS_REPO/test_datasets}"
 BENCH="$SIRIUS_REPO/test/tpch_performance/benchmark_and_validate.sh"
@@ -17,7 +17,7 @@ CONFIG="$BENCH_REPO/configs/baseline.yaml"
 mkdir -p "$RUN_DIR"
 
 for SF in $SFS; do
-  parquet_dir="$DATA_DIR/tpch_parquet_sf${SF}"
+  parquet_dir="$DATA_DIR/tpch_parquet_sirius_sf${SF}"
   dest="$RUN_DIR/sf${SF}_${ITERS}iter"
   log="$RUN_DIR/sf${SF}.log"
   SIRIUS_PIN_TIER=gpu "$BENCH" \

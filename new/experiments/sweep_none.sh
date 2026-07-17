@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# Baseline Sirius config + DuckDB reference run per SF on Sirius tpchgen-rs parquet (no pinning).
+# Baseline Sirius config + DuckDB reference run per SF on DuckDB parquet (no pinning).
 set -euo pipefail
-
 
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 
@@ -18,7 +17,7 @@ CONFIG="$BENCH_REPO/configs/baseline.yaml"
 mkdir -p "$RUN_DIR"
 
 for SF in $SFS; do
-  parquet_dir="$DATA_DIR/tpch_parquet_sirius_sf${SF}"
+  parquet_dir="$DATA_DIR/tpch_parquet_sf${SF}"
   dest="$RUN_DIR/sf${SF}_${ITERS}iter"
   log="$RUN_DIR/sf${SF}.log"
   "$BENCH" \

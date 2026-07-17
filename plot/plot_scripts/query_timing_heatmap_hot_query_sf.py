@@ -50,7 +50,11 @@ TARGETS = (
     ("sweep_default_spill_enabled", THREAD_SWEEP_NAMES),
     ("sweep_threads_host", THREAD_SWEEP_NAMES),
     ("sweep_baseline", None),
+    ("sweep_gpu", None),
+    ("sweep_none", None),
     ("sirius_parquet/sweep_baseline", None),
+    ("sirius_parquet/sweep_gpu", None),
+    ("sirius_parquet/sweep_none", None),
     ("sweep_memory_usage_limit", USAGE_LIMIT_SWEEP_NAMES),
     ("sweep_memory_downgrade_trigger", DOWNGRADE_TRIGGER_SWEEP_NAMES),
 )

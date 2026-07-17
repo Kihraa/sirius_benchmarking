@@ -23,7 +23,7 @@ export TIMEOUT TIMEOUT_SF300 TIMEOUT_SF1000
 NAME=""
 SELECTED=""
 
-VALID_EXPERIMENTS="sirius_parquet sweep_baseline sweep_threads_host sweep_gpu sweep_none sweep_memory_usage_limit sweep_memory_downgrade_trigger"
+VALID_EXPERIMENTS="sirius_parquet sweep_baseline sweep_threads_host sweep_gpu sweep_none sirius_parquet/sweep_gpu sirius_parquet/sweep_none sweep_memory_usage_limit sweep_memory_downgrade_trigger"
 
 normalize_experiment() {
   case "$1" in
@@ -32,6 +32,8 @@ normalize_experiment() {
     sweep_threads_host) echo sweep_threads_host ;;
     sweep_gpu) echo sweep_gpu ;;
     sweep_none) echo sweep_none ;;
+    sirius_parquet/sweep_gpu) echo sirius_parquet_sweep_gpu ;;
+    sirius_parquet/sweep_none) echo sirius_parquet_sweep_none ;;
     sweep_memory_usage_limit) echo sweep_memory_usage_limit ;;
     sweep_memory_downgrade_trigger) echo sweep_memory_downgrade_trigger ;;
     *) return 1 ;;
@@ -92,7 +94,7 @@ for SF in $BASELINE_SFS; do
   bash "$BENCH_REPO/test_gen/tpch_duck.sh" "$SF" "$DATA_DIR/tpch_parquet_sf${SF}"
 done
 
-if run_exp sirius_parquet || run_exp sweep_gpu || run_exp sweep_none; then
+if run_exp sirius_parquet || run_exp sirius_parquet_sweep_gpu || run_exp sirius_parquet_sweep_none; then
   for SF in $BASELINE_SFS; do
     bash "$BENCH_REPO/test_gen/tpch_sirius.sh" "$SF" "$DATA_DIR/tpch_parquet_sirius_sf${SF}"
   done
@@ -128,6 +130,20 @@ if run_exp sweep_none; then
   SWEEP_NONE_RUN_DIR="$RUN_DIR/sweep_none"
   mkdir -p "$SWEEP_NONE_RUN_DIR"
   bash "$BENCH_REPO/experiments/sweep_none.sh" "$SWEEP_NONE_RUN_DIR" "$BASELINE_SFS" "$ITERS"
+fi
+
+if run_exp sirius_parquet_sweep_gpu; then
+  SIRIUS_PARQUET_GPU="$RUN_DIR/sirius_parquet/sweep_gpu"
+  mkdir -p "$SIRIUS_PARQUET_GPU"
+  bash "$BENCH_REPO/experiments/sirius_parquet/sweep_gpu.sh" \
+    "$SIRIUS_PARQUET_GPU" "$BASELINE_SFS" "$ITERS"
+fi
+
+if run_exp sirius_parquet_sweep_none; then
+  SIRIUS_PARQUET_NONE="$RUN_DIR/sirius_parquet/sweep_none"
+  mkdir -p "$SIRIUS_PARQUET_NONE"
+  bash "$BENCH_REPO/experiments/sirius_parquet/sweep_none.sh" \
+    "$SIRIUS_PARQUET_NONE" "$BASELINE_SFS" "$ITERS"
 fi
 
 if run_exp sweep_memory_usage_limit; then
