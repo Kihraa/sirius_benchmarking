@@ -2,6 +2,9 @@
 # Baseline config, downgrade_trigger_fraction=0, downgrade_stop_fraction=0, single-session.
 set -euo pipefail
 
+
+source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
+
 RUN_DIR="$1"
 SFS="$2"
 ITERS="$3"
@@ -22,7 +25,7 @@ for SF in $SFS; do
   DUCKDB_BASELINE="${DUCKDB_BASELINE_DIR:?}/sf${SF}_${ITERS}iter"
   "$BENCH" \
     --config "$CONFIG" \
-    --timeout "${TIMEOUT:-120}" \
+    --timeout "$(timeout_for_sf "$SF")" \
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
