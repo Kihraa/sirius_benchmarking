@@ -13,21 +13,23 @@ export SIRIUS_SPILL_DIR
 export SIRIUS_PIN_TIER="${SIRIUS_PIN_TIER:-host}"
 
 SFS="1 3 10 30 100"
-ITERS=5
+SF_EXPLICIT=0
+ITERS=3
 TIMEOUT=1800
 NSYS=0
 export TIMEOUT
 NAME=""
 SELECTED=""
 
-VALID_EXPERIMENTS="sirius_parquet sweep_baseline sweep_default_spill_disabled sweep_default_spill_enabled sweep_memory_usage_limit sweep_memory_downgrade_trigger"
+VALID_EXPERIMENTS="sirius_parquet sweep_baseline sweep_threads_host sweep_gpu sweep_none sweep_memory_usage_limit sweep_memory_downgrade_trigger"
 
 normalize_experiment() {
   case "$1" in
     sirius_parquet|sirius_parquet/sweep_baseline) echo sirius_parquet ;;
     sweep_baseline) echo sweep_baseline ;;
-    sweep_default_spill_disabled) echo sweep_default_spill_disabled ;;
-    sweep_default_spill_enabled) echo sweep_default_spill_enabled ;;
+    sweep_threads_host) echo sweep_threads_host ;;
+    sweep_gpu) echo sweep_gpu ;;
+    sweep_none) echo sweep_none ;;
     sweep_memory_usage_limit) echo sweep_memory_usage_limit ;;
     sweep_memory_downgrade_trigger) echo sweep_memory_downgrade_trigger ;;
     *) return 1 ;;
@@ -49,7 +51,7 @@ add_experiment() {
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --sf) SFS="${2//,/ }"; shift 2 ;;
+    --sf) SFS="${2//,/ }"; SF_EXPLICIT=1; shift 2 ;;
     --iterations) ITERS="$2"; shift 2 ;;
     --timeout) TIMEOUT="$2"; export TIMEOUT; shift 2 ;;
     --name) NAME="$2"; shift 2 ;;
@@ -69,6 +71,11 @@ run_exp() {
   esac
 }
 
+BASELINE_SFS="$SFS"
+if [ "$SF_EXPLICIT" = 0 ]; then
+  BASELINE_SFS="$(printf '%s\n' $SFS 300 1000 | awk '!seen[$0]++')"
+fi
+
 if [ -z "$NAME" ]; then
   NAME="$(printf 'run%02d' $(( $(find "$ROOT_REPO/results" -maxdepth 1 -name 'run*' -type d 2>/dev/null | wc -l) + 1 )))"
 fi
@@ -79,12 +86,12 @@ DEFAULT_THREAD_EXPS="sweep_default_threads1 sweep_default_threads4 sweep_default
 USAGE_LIMIT_EXPS="sweep_usage_limit_0P1 sweep_usage_limit_0P3 sweep_usage_limit_0P5 sweep_usage_limit_0P7 sweep_usage_limit_0P9"
 DOWNGRADE_TRIGGER_EXPS="sweep_trigger_0P0_stop_0P0 sweep_trigger_0P1_stop_0P07 sweep_trigger_0P5_stop_0P35 sweep_trigger_0P9_stop_0P63 sweep_trigger_0P95_stop_0P67 sweep_trigger_1P0_stop_0P7"
 
-for SF in $SFS; do
+for SF in $BASELINE_SFS; do
   bash "$BENCH_REPO/test_gen/tpch_duck.sh" "$SF" "$DATA_DIR/tpch_parquet_sf${SF}"
 done
 
-if run_exp sirius_parquet; then
-  for SF in $SFS; do
+if run_exp sirius_parquet || run_exp sweep_gpu || run_exp sweep_none; then
+  for SF in $BASELINE_SFS; do
     bash "$BENCH_REPO/test_gen/tpch_sirius.sh" "$SF" "$DATA_DIR/tpch_parquet_sirius_sf${SF}"
   done
 fi
@@ -93,28 +100,32 @@ if run_exp sirius_parquet; then
   SIRIUS_PARQUET_BASELINE="$RUN_DIR/sirius_parquet/sweep_baseline"
   mkdir -p "$SIRIUS_PARQUET_BASELINE"
   bash "$BENCH_REPO/experiments/sirius_parquet/sweep_baseline.sh" \
-    "$SIRIUS_PARQUET_BASELINE" "$SFS" "$ITERS"
+    "$SIRIUS_PARQUET_BASELINE" "$BASELINE_SFS" "$ITERS"
 fi
 
 BASELINE_RUN_DIR="$RUN_DIR/sweep_baseline"
 mkdir -p "$BASELINE_RUN_DIR"
-bash "$BENCH_REPO/experiments/sweep_baseline.sh" "$BASELINE_RUN_DIR" "$SFS" "$ITERS"
+bash "$BENCH_REPO/experiments/sweep_baseline.sh" "$BASELINE_RUN_DIR" "$BASELINE_SFS" "$ITERS"
 export DUCKDB_BASELINE_DIR="$BASELINE_RUN_DIR"
 
-if run_exp sweep_default_spill_disabled; then
-  EXP_RUN_DIR="$RUN_DIR/sweep_default_spill_disabled"
+if run_exp sweep_threads_host; then
+  EXP_RUN_DIR="$RUN_DIR/sweep_threads_host"
   mkdir -p "$EXP_RUN_DIR"
   for exp in $DEFAULT_THREAD_EXPS; do
-    bash "$BENCH_REPO/experiments/sweep_default_spill_disabled/${exp}.sh" "$EXP_RUN_DIR" "$SFS" "$ITERS"
+    bash "$BENCH_REPO/experiments/sweep_threads_host/${exp}.sh" "$EXP_RUN_DIR" "$SFS" "$ITERS"
   done
 fi
 
-if run_exp sweep_default_spill_enabled; then
-  EXP_RUN_DIR="$RUN_DIR/sweep_default_spill_enabled"
-  mkdir -p "$EXP_RUN_DIR"
-  for exp in $DEFAULT_THREAD_EXPS; do
-    bash "$BENCH_REPO/experiments/sweep_default_spill_enabled/${exp}.sh" "$EXP_RUN_DIR" "$SFS" "$ITERS"
-  done
+if run_exp sweep_gpu; then
+  SWEEP_GPU_RUN_DIR="$RUN_DIR/sweep_gpu"
+  mkdir -p "$SWEEP_GPU_RUN_DIR"
+  bash "$BENCH_REPO/experiments/sweep_gpu.sh" "$SWEEP_GPU_RUN_DIR" "$BASELINE_SFS" "$ITERS"
+fi
+
+if run_exp sweep_none; then
+  SWEEP_NONE_RUN_DIR="$RUN_DIR/sweep_none"
+  mkdir -p "$SWEEP_NONE_RUN_DIR"
+  bash "$BENCH_REPO/experiments/sweep_none.sh" "$SWEEP_NONE_RUN_DIR" "$BASELINE_SFS" "$ITERS"
 fi
 
 if run_exp sweep_memory_usage_limit; then

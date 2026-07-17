@@ -47,6 +47,7 @@ DOWNGRADE_TRIGGER_SWEEP_NAMES = (
 TARGETS = (
     ("sweep_default_spill_disabled", THREAD_SWEEP_NAMES, "Threads", thread_label),
     ("sweep_default_spill_enabled", THREAD_SWEEP_NAMES, "Threads", thread_label),
+    ("sweep_threads_host", THREAD_SWEEP_NAMES, "Threads", thread_label),
     ("sweep_memory_usage_limit", USAGE_LIMIT_SWEEP_NAMES, "Usage limit", usage_limit_label),
     ("sweep_memory_downgrade_trigger", DOWNGRADE_TRIGGER_SWEEP_NAMES, "Downgrade trigger", downgrade_trigger_label),
 )
