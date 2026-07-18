@@ -2,9 +2,6 @@
 # Baseline Sirius config + DuckDB reference run per SF (duckdb/ reused by later sweeps).
 set -euo pipefail
 
-
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-
 RUN_DIR="$1"
 SFS="$2"
 ITERS="$3"
@@ -23,7 +20,7 @@ for SF in $SFS; do
   log="$RUN_DIR/sf${SF}.log"
   "$BENCH" \
     --config "$CONFIG" \
-    --timeout "$(timeout_for_sf "$SF")" \
+    --timeout "${TIMEOUT:-120}" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
     --pinning-mode per-query \

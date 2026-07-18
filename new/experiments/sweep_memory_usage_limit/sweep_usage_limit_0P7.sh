@@ -2,9 +2,6 @@
 # Baseline config, usage_limit_fraction=0.7, disk spill enabled, single-session.
 set -euo pipefail
 
-
-source "$(dirname "${BASH_SOURCE[0]}")/../lib.sh"
-
 RUN_DIR="$1"
 SFS="$2"
 ITERS="$3"
@@ -25,7 +22,7 @@ for SF in $SFS; do
   DUCKDB_BASELINE="${DUCKDB_BASELINE_DIR:?}/sf${SF}_${ITERS}iter"
   "$BENCH" \
     --config "$CONFIG" \
-    --timeout "$(timeout_for_sf "$SF")" \
+    --timeout "${TIMEOUT:-120}" \
     --duckdb-results "$DUCKDB_BASELINE" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \

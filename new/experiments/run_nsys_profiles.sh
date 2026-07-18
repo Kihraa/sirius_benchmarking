@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # Run profile_tpch_nsys.sh for Q1-Q22 into iter_dir/sirius/qN/nsys/.
 set -euo pipefail
-
-source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
-
 ITER_DIR="$1"
 SF="$2"
 CONFIG="$3"
@@ -30,6 +27,6 @@ for q in $(seq 1 22); do
   PARQUET_DIR="$PARQUET_DIR" \
   OUTPUT_DIR="$out_dir" \
   ITERATIONS="$ITERS" \
-  QUERY_TIMEOUT="${NSYS_TIMEOUT:-$(timeout_for_sf "$SF")}" \
+  QUERY_TIMEOUT="${NSYS_TIMEOUT:-${TIMEOUT:-120}}" \
   bash "$PROFILE" "$SF" "$q" || true
 done
