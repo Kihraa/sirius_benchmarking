@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 # Build variant images if needed, then run old and new benchmarks sequentially.
+#
+# Images use CUDA 12.9 + pixi cuda12 (for hosts with driver max CUDA 12.x, e.g. sgs-gpu06).
+# After changing Dockerfiles or switching hosts, force a rebuild:
+#   docker rmi sirius-bench:old sirius-bench:new 2>/dev/null || true
+#   ./run_all.sh --no-cache
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

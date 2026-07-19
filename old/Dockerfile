@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.2.1-devel-ubuntu24.04
+FROM nvidia/cuda:12.9.2-devel-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /workspace
@@ -17,8 +17,8 @@ RUN     git clone "$SIRIUS_REPO" /sirius
 WORKDIR /sirius
 RUN     git checkout "$SIRIUS_REF" && git submodule update --init --recursive
 RUN     git rev-parse HEAD | tee /sirius_commit.txt
-RUN     pixi install
-RUN     pixi run make
+RUN     pixi install -e cuda12
+RUN     pixi run -e cuda12 make
 
 # tpchgen-rs parquet generation (generate_tpch_data.sh standalone: rust + pyarrow)
 RUN     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
