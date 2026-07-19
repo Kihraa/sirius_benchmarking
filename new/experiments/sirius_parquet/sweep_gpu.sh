@@ -22,6 +22,7 @@ for SF in $SFS; do
     --timeout "${TIMEOUT:-120}" \
     --parquet-dir "$parquet_dir" \
     --iterations "$ITERS" \
+    --multi-session \
     --pinning-mode per-query \
     --pin-after-iteration 1 \
     "$SF" </dev/null 2>&1 | tee "$log" || true
