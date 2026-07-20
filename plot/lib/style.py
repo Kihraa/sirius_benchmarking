@@ -10,6 +10,17 @@ DEFAULT_DPI = 150
 DEFAULT_FIGSIZE = (15, 5)
 MISSING_COLOR = "#eeeeee"
 
+SIRIUS_BAR_FACE = "#9ec5e8"
+DUCKDB_BAR_FACE = "#d4c4e8"
+BAR_OUTLINE = "black"
+BAR_MISMATCH = "red"
+SIRIUS_HATCH = "/"
+DUCKDB_HATCH = "-"
+BAR_LINEWIDTH = 0.8
+SIRIUS_FAILED_MARKER = "x"
+SIRIUS_FAILED_COLOR = "black"
+SIRIUS_FAILED_MARKERSIZE = 8
+
 
 def log_blue_cmap() -> LinearSegmentedColormap:
     cmap = LinearSegmentedColormap.from_list(

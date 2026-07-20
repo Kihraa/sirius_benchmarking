@@ -10,6 +10,7 @@ from plot.lib.paths import DEFAULT_SFS, find_sf_timing_csv, find_sf_validation_c
 
 QUERIES = tuple(f"Q{i}" for i in range(1, 23))
 VALIDATION_MISMATCH = "validation"
+VALIDATION_ERROR = "error"
 
 
 def _parse_runtime(value: str) -> float | None:
@@ -22,13 +23,13 @@ def _parse_runtime(value: str) -> float | None:
         return None
 
 
-def sirius_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
+def _engine_times(csv_path: Path, engine: str, *, hot: bool = True) -> dict[str, float]:
     if hot:
         warm: dict[str, list[float]] = {q: [] for q in QUERIES}
         with csv_path.open(newline="") as handle:
             reader = csv.DictReader(handle)
             for row in reader:
-                if row.get("engine") != "sirius":
+                if row.get("engine") != engine:
                     continue
                 iteration = int(row["iteration"])
                 if iteration == 1:
@@ -46,7 +47,7 @@ def sirius_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
     with csv_path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
-            if row.get("engine") != "sirius":
+            if row.get("engine") != engine:
                 continue
             if int(row["iteration"]) != 1:
                 continue
@@ -60,8 +61,28 @@ def sirius_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
     return cold
 
 
+def sirius_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
+    return _engine_times(csv_path, "sirius", hot=hot)
+
+
+def duckdb_times(csv_path: Path, *, hot: bool = True) -> dict[str, float]:
+    return _engine_times(csv_path, "duckdb", hot=hot)
+
+
 def warm_sirius_times(csv_path: Path) -> dict[str, float]:
     return sirius_times(csv_path, hot=True)
+
+
+def build_query_engine_times(
+    sweep_dir: Path,
+    sf: int,
+    *,
+    hot: bool = True,
+) -> tuple[dict[str, float], dict[str, float]]:
+    csv_path = find_sf_timing_csv(sweep_dir, sf)
+    if csv_path is None:
+        return {}, {}
+    return sirius_times(csv_path, hot=hot), duckdb_times(csv_path, hot=hot)
 
 
 def build_query_sf_matrix(
@@ -96,6 +117,18 @@ def validation_mismatches(csv_path: Path) -> set[str]:
             if query in QUERIES and status == VALIDATION_MISMATCH:
                 mismatches.add(query)
     return mismatches
+
+
+def sirius_failures(csv_path: Path) -> set[str]:
+    failures: set[str] = set()
+    with csv_path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            query = row.get("query", "")
+            status = row.get("status", "").strip()
+            if query in QUERIES and status == VALIDATION_ERROR:
+                failures.add(query)
+    return failures
 
 
 def build_query_sf_validation_matrix(
