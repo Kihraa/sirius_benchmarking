@@ -28,6 +28,7 @@ run_variant() {
   docker run --rm --gpus all \
     --security-opt seccomp=unconfined \
     --cap-add SYS_NICE \
+    -e SIRIUS_LOG_LEVEL=debug \
     -v "$ROOT":/bench \
     "$tag" \
     "$script" "${FORWARD_ARGS[@]}"

@@ -177,9 +177,41 @@ def thread_label(sweep_name: str) -> str:
     return sweep_name
 
 
+USAGE_LIMIT_SWEEP_NAMES = (
+    "sweep_usage_limit_0P1",
+    "sweep_usage_limit_0P3",
+    "sweep_usage_limit_0P5",
+    "sweep_usage_limit_0P7",
+    "sweep_usage_limit_0P9",
+)
+
+
 def usage_limit_label(sweep_name: str) -> str:
     token = sweep_name.removeprefix("sweep_usage_limit_")
     return _fraction_token(token)
+
+
+def build_usage_limit_query_times(
+    family_dir: Path,
+    sf: int,
+    *,
+    hot: bool = True,
+) -> tuple[dict[str, dict[str, float]], tuple[str, ...]]:
+    limit_labels = tuple(usage_limit_label(name) for name in USAGE_LIMIT_SWEEP_NAMES)
+    times: dict[str, dict[str, float]] = {query: {} for query in QUERIES}
+
+    for sweep_name, limit_label in zip(USAGE_LIMIT_SWEEP_NAMES, limit_labels, strict=True):
+        sweep_dir = family_dir / sweep_name
+        if not sweep_dir.is_dir():
+            continue
+        csv_path = find_sf_timing_csv(sweep_dir, sf)
+        if csv_path is None:
+            continue
+        query_times = sirius_times(csv_path, hot=hot)
+        for query, runtime in query_times.items():
+            times[query][limit_label] = runtime
+
+    return times, limit_labels
 
 
 def downgrade_trigger_label(sweep_name: str) -> str:

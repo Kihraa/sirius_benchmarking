@@ -14,7 +14,9 @@ from plot.lib.paths import bench_repo, list_runs
 from plot.lib.style import apply_style
 from plot.plot_scripts import (
     query_timing_bar_cold_query_sf,
+    query_timing_bar_cold_usage_limit,
     query_timing_bar_hot_query_sf,
+    query_timing_bar_hot_usage_limit,
     query_timing_heatmap_cold_query_sf,
     query_timing_heatmap_hot_query_sf,
     tpch_timing_heatmap_cold_sweep_sf,
@@ -23,7 +25,9 @@ from plot.plot_scripts import (
 
 PLOTS = {
     query_timing_bar_cold_query_sf.PLOT_NAME: query_timing_bar_cold_query_sf.generate,
+    query_timing_bar_cold_usage_limit.PLOT_NAME: query_timing_bar_cold_usage_limit.generate,
     query_timing_bar_hot_query_sf.PLOT_NAME: query_timing_bar_hot_query_sf.generate,
+    query_timing_bar_hot_usage_limit.PLOT_NAME: query_timing_bar_hot_usage_limit.generate,
     query_timing_heatmap_hot_query_sf.PLOT_NAME: query_timing_heatmap_hot_query_sf.generate,
     query_timing_heatmap_cold_query_sf.PLOT_NAME: query_timing_heatmap_cold_query_sf.generate,
     tpch_timing_heatmap_hot_sweep_sf.PLOT_NAME: tpch_timing_heatmap_hot_sweep_sf.generate,
